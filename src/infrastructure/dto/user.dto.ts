@@ -8,7 +8,7 @@ export class UserDto {
     username: string;
     password:string;
     typeOfDocument:TypesDocument;
-    numberOfDocument: number;
+    numberOfDocument: string;
     last8Digits: string;
     date: string;
     email: string;
