@@ -7,5 +7,5 @@ CREATE TABLE users (
     cardNumber VARCHAR(255) NOT NULL,
     expiration_date VARCHAR(50) NOT NULL, 
     email VARCHAR(255) NOT NULL,
-    phone VARCHAR(20) NOT NULL
+    phone VARCHAR(255) NOT NULL
 );

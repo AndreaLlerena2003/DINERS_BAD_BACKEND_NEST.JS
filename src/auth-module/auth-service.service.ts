@@ -60,7 +60,9 @@ export class AuthService {
                 }
             }
             if(userDto.phone){
-                if(userDto.phone.length != 6){
+                if(userDto.phone.length != 9){
+                    console.log(userDto.phone);
+                    console.log(userDto.phone.length);
                     throw new Error("Invalid phone number");
                 }
             }
