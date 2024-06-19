@@ -9,7 +9,7 @@ export class UserDto {
     password:string;
     typeOfDocument:TypesDocument;
     numberOfDocument: string;
-    last8Digits: string;
+    cardNumber: string;
     date: string;
     email: string;
     phone: string;

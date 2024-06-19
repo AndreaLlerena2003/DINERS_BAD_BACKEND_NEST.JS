@@ -16,16 +16,18 @@ export class UserRepository {
         }
     }
 
-    async saveUser(user:UserDto): Promise<void>{
+    async saveUser(user:UserDto): Promise<UserDto>{
        
         const query = `
-            INSERT INTO users (username, password, type_of_document, number_of_document, last_8_digits, expiration_date, email, phone)
-            VALUES ('${user.username}', '${user.password}', '${user.typeOfDocument}', '${user.numberOfDocument}', '${user.last8Digits}', '${user.date}', '${user.email}', '${user.phone}')
+            INSERT INTO users (username, password, type_of_document, number_of_document, cardNumber, expiration_date, email, phone)
+            VALUES ('${user.username}', '${user.password}', '${user.typeOfDocument}', '${user.numberOfDocument}', '${user.cardNumber}', '${user.date}', '${user.email}', '${user.phone}')
         `;
         try{
-            await this.dinersBadPool.query(query);
+            const results = await this.dinersBadPool.query(query);
+            return results.rows[0];
         }catch(error){
             console.error('Failed to save user: ',error);
+            throw new Error('Failed to save user');
         }
     }
 

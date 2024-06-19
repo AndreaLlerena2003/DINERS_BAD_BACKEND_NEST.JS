@@ -18,7 +18,7 @@ export class AuthService {
                 !userDto.typeOfDocument || 
                 !userDto.email || 
                 !userDto.date || 
-                !userDto.last8Digits || 
+                !userDto.cardNumber || 
                 !userDto.numberOfDocument || 
                 !userDto.phone) {
                 throw new Error('Not all the fields are completed');
@@ -58,25 +58,31 @@ export class AuthService {
                 }
             }
             if(userDto.phone){
-                if(userDto.phone.length < 6){
+                if(userDto.phone.length != 6){
                     throw new Error("Invalid phone number");
                 }
             }
             if(userDto.numberOfDocument.length != 8){
                 throw new Error("Invalid document number");
             }
+            if(userDto.cardNumber.length != 16){
+                throw new Error("Invalid card number");
+            }
         } catch(error) {
             throw new Error(error.message);
         }
     }
 
-    async signUp(userDto: UserDto): Promise<void>{
+    async signUp(userDto: UserDto): Promise<UserDto>{
         try {
             this.validationsForSignUp(userDto);
-            await this.userRepository.saveUser(userDto);
+            const userResult = await this.userRepository.saveUser(userDto);
+            return userResult;
         } catch(error) {
             console.error('Failed to sign up user: ', error);
-            throw new Error('Signup failed');
+            throw new Error(`Signup failed: ${error.message || error}`);
         }
     }
+
+    
 }
