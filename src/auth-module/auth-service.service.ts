@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Console } from 'console';
 import { TypesDocument, UserDto } from 'src/infrastructure/dto/user.dto';
 import { UserRepository } from 'src/infrastructure/repositories/user-repository';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -32,6 +33,7 @@ export class AuthService {
                 if (!regex.test(userDto.password)) {
                     throw new Error("Password does not meet the minimum conditions required");
                 }
+               
             }
             if(userDto.date){
                 let csv = userDto.date;
@@ -76,11 +78,27 @@ export class AuthService {
     async signUp(userDto: UserDto): Promise<UserDto>{
         try {
             this.validationsForSignUp(userDto);
+            const saltOrRounds: number = 10;
+            const hashPass = await bcrypt.hash(userDto.password, saltOrRounds);
+            userDto.password = hashPass;
+            console.log(userDto.password);
             const userResult = await this.userRepository.saveUser(userDto);
             return userResult;
         } catch(error) {
             console.error('Failed to sign up user: ', error);
             throw new Error(`Signup failed: ${error.message || error}`);
+        }
+    }
+
+    async signIn(username:string,password:string): Promise<any>{
+        try{
+            const user = await this.userRepository.findOneWithUsernameAndPassword(username,password);
+            if(!user){
+                throw new Error('Usuario Invalido');
+            }
+            return user;
+        }catch(error){
+            throw new Error(error);
         }
     }
 
