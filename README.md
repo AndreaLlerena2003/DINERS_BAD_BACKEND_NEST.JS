@@ -24,7 +24,7 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This project is a CRUD (Create, Read, Update, Delete) backend built using Nest.js, aimed at simulating SQL injection vulnerabilities for educational purposes.
 
 ## Installation
 
