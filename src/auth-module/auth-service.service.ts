@@ -3,14 +3,17 @@ import { Console } from 'console';
 import { TypesDocument, UserDto } from 'src/infrastructure/dto/user.dto';
 import { UserRepository } from 'src/infrastructure/repositories/user-repository';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
 
     private readonly userRepository: UserRepository;
+   
 
-    constructor(){
+    constructor(private readonly jwtService: JwtService){
         this.userRepository = new UserRepository();
+        
     }
 
     validationsForSignUp(userDto: UserDto){
@@ -92,17 +95,21 @@ export class AuthService {
         }
     }
 
-    async signIn(username:string,password:string): Promise<any>{
-        try{
-            const user = await this.userRepository.findOneWithUsernameAndPassword(username,password);
-            if(!user){
-                throw new Error('Usuario Invalido');
-            }
-            return user;
-        }catch(error){
-            throw new Error(error);
+    
+    async signIn(username: string, password: string): Promise<{ accessToken: string }> {
+        const user = await this.userRepository.findOneWithUsernameAndPassword(username, password);
+        if (!user) {
+          throw new Error('Invalid credentials');
         }
-    }
+        const payload = { username: user.username, sub: user.id };
+        if (!this.jwtService) {
+            throw new Error('JwtService is not properly injected');
+        }
+        return {
+            accessToken: await this.jwtService.signAsync(payload),
+          };
+      }
 
+    
     
 }
