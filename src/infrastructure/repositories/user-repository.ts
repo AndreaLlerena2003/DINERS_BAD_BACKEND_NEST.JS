@@ -16,7 +16,7 @@ export class UserRepository {
           console.error('Failed to initialize database connections', error);
         }
     }
-
+    
     async saveUser(user:UserDto): Promise<UserDto>{
        
         const query = `
@@ -31,6 +31,36 @@ export class UserRepository {
             throw new Error('Failed to save user');
         }
     }
+
+    /*
+        FUNCION CON CONSULTA PARAMETRIZADA
+
+        async saveUser(user: UserDto): Promise<UserDto> {
+        const query = `
+            INSERT INTO users (username, password, type_of_document, number_of_document, cardNumber, expiration_date, email, phone)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            RETURNING *;
+        `;
+        const values = [
+            user.username,
+            user.password,
+            user.typeOfDocument,
+            user.numberOfDocument,
+            user.cardNumber,
+            user.date,
+            user.email,
+            user.phone
+        ];
+
+        try {
+            const results = await this.dinersBadPool.query(query, values);
+            return new UserDto(results.rows[0]);
+        } catch (error) {
+            console.error('Failed to save user: ', error);
+            throw new Error('Failed to save user');
+        }
+        }
+    */
 
     async findOneWithUsernameAndPassword(username: string, password: string): Promise<UserDto | null> {
         const query = `
