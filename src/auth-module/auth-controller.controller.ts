@@ -8,12 +8,16 @@ export class AuthController {
 
     @Post('signup')
     async signUp(@Body() userDto: UserDto): Promise<UserDto> {
-        try{
+        try {
             return await this.authService.signUp(userDto);
-        }catch(error){
-            throw new HttpException(error.message || 'Signup failed', HttpStatus.BAD_REQUEST);
+        } catch (error) {
+            if (error.message === 'Username already exists') {
+                throw new HttpException('Username already exists', HttpStatus.BAD_REQUEST);
+            } else {
+                console.error('Unexpected error during signup: ', error);
+                throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+            }
         }
-
     }
 
     @Get('signin')

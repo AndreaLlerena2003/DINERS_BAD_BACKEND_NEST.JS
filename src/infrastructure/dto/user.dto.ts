@@ -1,3 +1,5 @@
+import { CardDto } from "./card.dto";
+
 export enum TypesDocument {
     DNI = 'DNI',
     CARNET_EXTRANJERIA = 'CARNET_EXTRANJERIA',
@@ -10,21 +12,26 @@ export class UserDto {
     password:string;
     typeOfDocument:TypesDocument;
     numberOfDocument: string;
-    cardNumber: string;
-    date: string;
+    cards: CardDto[];
     email: string;
     phone: string;
 
     constructor(data: any) {
-        this.id = data.id
+        this.id = data.id;
         this.username = data.username;
         this.password = data.password;
         this.typeOfDocument = data.type_of_document;
         this.numberOfDocument = data.number_of_document;
-        this.cardNumber = data.cardnumber;
-        this.date = data.expiration_date;
         this.email = data.email;
         this.phone = data.phone;
+
+        
+        this.cards = [];
+        if (data.card) {
+            this.cards.push(new CardDto(data.card));
+        } else if (data.cards && Array.isArray(data.cards)) {
+            this.cards = data.cards.map((cardData: any) => new CardDto(cardData));
+        }
     }
 
 }
