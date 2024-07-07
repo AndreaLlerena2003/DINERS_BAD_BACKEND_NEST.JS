@@ -11,7 +11,7 @@ export class UsuarioController {
   ) {}
 
   @Get('profile')
-  async getProfile(@Headers('authorization') authHeader: string): Promise<UserDto> {
+  async getProfile(@Headers('authorization') authHeader: string): Promise<UserDto | { error: string }> {
     if (!authHeader) {
       throw new UnauthorizedException('Authorization header is missing');
     }
@@ -29,7 +29,7 @@ export class UsuarioController {
   async addCard(
     @Headers('authorization') authHeader: string,
     @Body() cardDto: CardDto
-    ): Promise<CardDto> {
+    ): Promise<CardDto | { error: string }> {
         try {
             const token = authHeader.replace('Bearer ', '');
             const addedCard = await this.usuarioService.addCard(token, cardDto);

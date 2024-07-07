@@ -7,7 +7,7 @@ export class AuthController {
     constructor(private readonly authService: AuthService){}
 
     @Post('signup')
-    async signUp(@Body() userDto: UserDto): Promise<UserDto> {
+    async signUp(@Body() userDto: UserDto): Promise<UserDto | { errors: string[] }>{
         try {
             return await this.authService.signUp(userDto);
         } catch (error) {
@@ -21,9 +21,10 @@ export class AuthController {
     }
 
     @Get('signin')
-    async signIn(@Query('username') username: string, @Query('password') password: string): Promise<{ accessToken: string }> {
+    async signIn(@Query('username') username: string, @Query('password') password: string): Promise<{ accessToken: string } | { error: string }> {
         try {
             return await this.authService.signIn(username, password);
+            
         } catch (error) {
             throw new HttpException(error.message || 'SignIn failed', HttpStatus.BAD_REQUEST);
         }

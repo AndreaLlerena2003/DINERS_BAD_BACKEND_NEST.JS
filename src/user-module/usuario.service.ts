@@ -16,58 +16,58 @@ export class UsuarioService {
         
     }
 
-    async getProfile(token: string): Promise<UserDto> {
+    async getProfile(token: string): Promise<UserDto | { error: string }>{
         try {
           const decodedToken = await this.jwtService.verifyAsync(token);
           const userId = decodedToken.sub;
           const user = await this.userRepository.findUserById(userId);
           if (!user) {
-            throw new Error('Invalid user');
+            return { error: 'Invalid user' };
           }
           return user;
         } catch (error) {
-          throw new Error('Invalid token');
+            return { error: 'Invalid token' };
         }
     }
     
-    async addCard(token: string, cardDto: CardDto): Promise<CardDto> {
+    async addCard(token: string, cardDto: CardDto):Promise<CardDto | { error: string }> {
       try {
 
           const decodedToken = await this.jwtService.verifyAsync(token);
           const userId = decodedToken.sub;
           const user = await this.userRepository.findUserById(userId);
           if (!user) {
-              throw new Error('Invalid user');
+                return { error: 'Invalid user' };
           }
           if (cardDto.cardNumber.length != 16) {
-            throw new Error("Invalid card number");
+                return { error: 'Invalid card number' };
           }
 
           if (cardDto.expirationDate) {
               let fields = cardDto.expirationDate.split('/');
               if (fields.length !== 2) {
-                  throw new Error("Invalid Date Format: Date should be in 'month/year' format");
+                return { error: "Invalid Date Format: Date should be in 'month/year' format" };
               }
               if (parseInt(fields[0]) > 12) {
-                  throw new Error("Invalid Date");
+                return { error: 'Invalid Date' };
               }
           }
 
           if (!cardDto.cardHolderName) {
-              throw new Error("Card holder name is required");
+              return { error: 'Card holder name is required' };
           }
 
           if (!cardDto.cardType) {
-              throw new Error("Card type is required");
+            return { error: 'Card type is required' };
           }
 
           const validCardTypes = Object.values(TypesOfCard);
           if (!validCardTypes.includes(cardDto.cardType.toUpperCase() as TypesOfCard)) {
-              throw new Error("Invalid card type");
+            return { error: 'Invalid card type' };
           }
 
           if (cardDto.securityCode.length != 3) {
-              throw new Error("Invalid security code");
+            return { error: 'Invalid security code' };
           }
 
           const insertedCard = await this.cardRepository.addCardForUser(userId, cardDto);
@@ -75,7 +75,7 @@ export class UsuarioService {
   
       } catch (error) {
           console.error('Failed to add card: ', error);
-          throw new Error('Failed to add card');
+          return { error: 'Failed to add card' };
       }
     }
 
