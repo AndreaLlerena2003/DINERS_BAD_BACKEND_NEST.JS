@@ -29,17 +29,21 @@ export class UsuarioController {
   async addCard(
     @Headers('authorization') authHeader: string,
     @Body() cardDto: CardDto
-    ): Promise<CardDto | { error: string }> {
-        try {
-            const token = authHeader.replace('Bearer ', '');
-            const addedCard = await this.usuarioService.addCard(token, cardDto);
-            return addedCard;
+  ): Promise<CardDto> {
+    try {
+      const token = authHeader.replace('Bearer ', '');
+      const addedCard = await this.usuarioService.addCard(token, cardDto);
+      return addedCard;
 
-        } catch (error) {
-            console.error('Error adding card: ', error);
-            throw new HttpException('Failed to add card', HttpStatus.INTERNAL_SERVER_ERROR);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      } else {
+        console.error('Error adding card: ', error);
+        throw new HttpException('Failed to add card', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
     }
   }
-  
+
 
 }

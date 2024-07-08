@@ -42,14 +42,16 @@ export class CardRepository {
     
     async addCardForUser(userId: number, cardDto: CardDto): Promise<CardDto> {
         const query = `
-            INSERT INTO cards (user_id, cardnumber, expiration_date, cardholdername, cardtype, securitycode)
+            INSERT INTO cards (user_id, cardnumber, expiration_date, cardholdername, cardtype, securitycode, cash)
             VALUES (
                 ${userId},
                 '${cardDto.cardNumber}',
                 '${cardDto.expirationDate}',
                 '${cardDto.cardHolderName}',
                 '${cardDto.cardType}',
-                '${cardDto.securityCode}'
+                '${cardDto.securityCode}',
+                ${cardDto.cash}
+                
             )
             RETURNING *;
         `;
@@ -64,6 +66,7 @@ export class CardRepository {
             insertedCard.cardHolderName = row.cardholdername;
             insertedCard.cardType = row.cardtype;
             insertedCard.securityCode = row.securitycode;
+            insertedCard.cardType = row.cash
     
             console.log('Card added successfully');
             return insertedCard;

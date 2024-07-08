@@ -21,6 +21,7 @@ export class UserRepository {
     }
     
     async saveUser(user: UserDto): Promise<UserDto> {
+
         const userQuery = `
             INSERT INTO users (username, password, type_of_document, number_of_document, email, phone)
             VALUES ('${user.username}', '${user.password}', '${user.typeOfDocument}', '${user.numberOfDocument}', '${user.email}', '${user.phone}')
@@ -32,11 +33,11 @@ export class UserRepository {
             await this.dinersBadPool.query('BEGIN');
             const userResult = await this.dinersBadPool.query(userQuery);
             const newUser = new UserDto(userResult.rows[0]);
-            
+            const cash = 100;
             for (const card of user.cards) {
                 const cardQuery = `
-                    INSERT INTO cards (user_id, cardNumber, expiration_date, cardHolderName, cardType, securityCode)
-                    VALUES (${newUser.id}, '${card.cardNumber}', '${card.expirationDate}', '${card.cardHolderName}', '${card.cardType}', '${card.securityCode}')
+                    INSERT INTO cards (user_id, cardNumber, expiration_date, cardHolderName, cardType, securityCode, cash)
+                    VALUES (${newUser.id}, '${card.cardNumber}', '${card.expirationDate}', '${card.cardHolderName}', '${card.cardType}', '${card.securityCode}','${cash}')
                     RETURNING *;
                 `;
                 const cardResult = await this.dinersBadPool.query(cardQuery);

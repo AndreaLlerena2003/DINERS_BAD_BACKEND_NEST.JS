@@ -22,7 +22,7 @@ import {
         const payload = await this.jwtService.verifyAsync(
           token,
           {
-            secret: jwtConstants.secret
+            secret: jwtConstants.secret,
           }
         );
         request['user'] = payload;

@@ -21,6 +21,7 @@
             const errors: string[] = [];
             try {
                 if (!userDto.password || 
+                    !userDto.username||
                     !userDto.typeOfDocument || 
                     !userDto.email || 
                     !userDto.cards || 
@@ -31,13 +32,6 @@
                 }
 
                 
-                const validTypes = Object.values(TypesDocument);
-                if(!validTypes.includes(userDto.typeOfDocument.toUpperCase() as TypesDocument)){
-                    console.log('Invalid type of document');
-                    errors.push('Invalid type of document');
-                } 
-
-                
                 if (userDto.password) {
                     const regex = /^(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
                     if (!regex.test(userDto.password)) {
@@ -45,7 +39,14 @@
                         console.log("Password does not meet the minimum conditions required");
                     }
                 }
-        
+                
+                const validTypes = Object.values(TypesDocument);
+                if(!validTypes.includes(userDto.typeOfDocument.toUpperCase() as TypesDocument)){
+                    console.log('Invalid type of document');
+                    errors.push('Invalid type of document');
+                } 
+
+               
                 if(userDto.email){
                     let emailValid = userDto.email;
                     let fields = emailValid.split('@');
@@ -115,16 +116,16 @@
             return errors;
         }
 
-        async signUp(userDto: UserDto):Promise<UserDto | { errors: string[] }> {
+        async signUp(userDto: UserDto):Promise<UserDto | { errors: string }> {
             try {
                 const validationErrors = await this.validationsForSignUp(userDto);
                 if (validationErrors.length > 0) {
-                    return { errors: validationErrors };
+                    return { errors: validationErrors[0] };
                 }    
                 const existingUser = await this.userRepository.findByUsername(userDto.username);
                 if (existingUser) {
                     console.log('Username already exists');
-                    return { errors: ['Username already exists'] };
+                    return { errors: 'Username already exists' };
                 }
                 const saltOrRounds: number = 10;
                 const hashPass = await bcrypt.hash(userDto.password, saltOrRounds);
