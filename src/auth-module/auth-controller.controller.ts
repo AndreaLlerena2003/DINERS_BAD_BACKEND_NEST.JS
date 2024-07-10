@@ -11,6 +11,9 @@ export class AuthController {
     async signUp(@Body() userDto: UserDto): Promise<UserDto | { errors: string }> {
       try {
         const result = await this.authService.signUp(userDto);
+        if ('errors' in result) {
+          throw new HttpException({ errors: result.errors }, HttpStatus.BAD_REQUEST);
+        }
         return result as UserDto;
       } catch (error) {
         console.error('Error during signup:', error);
